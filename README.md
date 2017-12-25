@@ -164,7 +164,7 @@ meaningfully interact with the table listing pod information. For example,
 we can set an environment variable to be the name of pod running our random
 service as follows:
 
-```
+```bash
 POD_NAME=$(kubectl get pods -o jsonpath="{.items[*].metadata.name}" | grep "random-")
 ```
 

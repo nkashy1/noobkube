@@ -12,13 +12,15 @@ let app = express();
 
 app.get('/:N', (req, res) => {
   request.get(RANDOM_SERVER_URL, (err, response, body) => {
+    const N = parseInt(req.params.N);
+
+    console.log(`${new Date()}: Received request against /${N}`)
     if (!!err) {
       console.log(err);
       return res.sendStatus(500);
     }
 
     const u = parseFloat(body);
-    const N = parseInt(req.params.N);
     let n = Math.floor(u*N);
 
     res.status(200);

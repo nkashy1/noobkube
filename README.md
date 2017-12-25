@@ -107,7 +107,7 @@ We can deploy our `random-server` application to the minikube cluster using the
 `kubectl run` command. We will pull the image from DockerHub:
 
 ```bash
-kubectl run random --image=fuzzyfrog/random-server
+kubectl run random --image=fuzzyfrog/random-server:v1
 ```
 
 Now, you can see that the `random` server has been deployed to your cluster with
@@ -200,7 +200,7 @@ Let us deploy `randint-server` pods to the minikube cluster. Note that
 using the `--env` parameter (try `kubectl run --help` for more information).
 
 ```bash
-kubectl run randint --image=fuzzyfrog/randint-server --env "RANDOM_SERVER_URL=http://${CLUSTER_IP}:${RANDOM_SERVICE_PORT}"
+kubectl run randint --image=fuzzyfrog/randint-server:v1 --env "RANDOM_SERVER_URL=http://${CLUSTER_IP}:${RANDOM_SERVICE_PORT}"
 ```
 
 where `${CLUSTER_IP}` and `${RANDOM_SERVICE_PORT}` have the same values as above.
@@ -220,3 +220,50 @@ curl ${CLUSTER_IP}:${RANDINT_SERVICE_PORT}/42
 ```
 
 This will return a random integer between 0 and 41 (including possibly 0 or 41).
+
+Just as with `random`, you can scale up your `randint` deployment using
+
+```bash
+kubectl scale deployment/randint --replicas=${NUM_RANDINT_REPLICAS}
+```
+
+where `${NUM_RANDINT_REPLICAS}` specifies the number of pods you want to bring
+up for this deployment.
+
+Note that you can also see the logs for all the pods for your `randint`
+deployment (even if you scaled them up using `kubectl scale` as demonstrated
+above) using
+
+```bash
+kubectl logs -l run=randint
+```
+
+These logs aren't particularly meaningful because the version of the application
+packaged in the `fuzzyfrog/randint-server:v1` image on DockerHub that we
+deployed is particularly poorly implemented. The `fuzzyfrog/randint-server:v2`
+image improves upon the logging situation. To update our `randint` deployment
+to use this image, we can simply
+
+```bash
+kubectl set image deployment/randint randint=fuzzyfrog/randint-server:v2
+```
+
+If you had scaled up the number of replicas on your `randint` deployment
+earlier, this update will hit all the replicas. The `randint-service` now
+spreads its load over the new `randint` pods. To test this, make a few calls
+to the service using
+
+```bash
+curl ${CLUSTER_IP}:${RANDINT_SERVICE_PORT}/42
+```
+
+Change up the `42` if you're feeling particularly wild.
+
+Now run
+
+```bash
+kubectl logs -l run=randint
+```
+
+The different calls should now be logged in the resulting output. This will
+also show you how `randint-service` distributes calls over your pods.

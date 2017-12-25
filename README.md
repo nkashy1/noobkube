@@ -44,20 +44,20 @@ is a very simple service which returns a random number between 0 and 1. If you
 would like to see it run and have Docker installed, you can pull the
 [image from DockerHub](https://hub.docker.com/r/fuzzyfrog/random-server/):
 
-```
+```bash
 docker pull fuzzyfrog/random-server
 ```
 
 and then run it on port `<PORT>` (replace this with the port of your choice in the
 commands below):
 
-```
+```bash
 docker run -d -p <PORT>:8080 fuzzyfrog/random-server
 ```
 
 Now you can test the service by calling `curl`:
 
-```
+```bash
 curl localhost:<PORT>
 ```
 
@@ -72,14 +72,14 @@ or its [Dockerfile](./random-server/Dockerfile).
 You can bring up your `minikube` cluster by
 simply:
 
-```
+```bash
 minikube start
 ```
 
 This will automatically make the `minikube` cluster available to `kubectl`. To
 check this, try running
 
-```
+```bash
 kubectl cluster-info
 ```
 
@@ -96,7 +96,7 @@ now, but this tidbit of information will come in handy if your kubernetes voyage
 takes you past this repo. When you need to work with more than one cluster,
 start out with a simple
 
-```
+```bash
 kubectl config --help
 ```
 
@@ -106,19 +106,19 @@ kubectl config --help
 We can deploy our `random-server` application to the minikube cluster using the
 `kubectl run` command. We will pull the image from DockerHub:
 
-```
+```bash
 kubectl run random --image=fuzzyfrog/random-server
 ```
 
 Now, you can see that the `random` server has been deployed to your cluster with
 
-```
+```bash
 kubectl get deployments
 ```
 
 Moreover, you should be able to see the pod corresponding to that deployment
 
-```
+```bash
 kubectl get pods
 ```
 
@@ -126,33 +126,33 @@ Although a pod is up and running our `random-server`, this server is not current
 exposed to the world outside minikube cluster. To make it generally available,
 we use
 
-```
+```bash
 kubectl expose deployment random --type=NodePort --name=random-service --port=8080
 ```
 
 This exposes the `deployment` as a `service`, which we can see now with
 
-```
+```bash
 kubectl get services
 ```
 
 That tells us which port our containers' ports `8080` are exposed as. Under the
 ports column, you should see something like
 
-```
+```bash
 8080:<EXPOSED_PORT>/TCP
 ```
 
 If you do `kubectl cluster-info`, you should also see the IP address at which
 your minikube cluster is runnning as
 
-```
+```bash
 https://<IP_ADDRESS>:<IGNORE_THIS_PORT>
 ```
 
 To make a GET request against our `random-service`, all you have to do now is
 
-```
+```bash
 curl <IP_ADDRESS>:<EXPOSED_PORT>
 ```
 

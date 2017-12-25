@@ -139,22 +139,32 @@ kubectl get services
 That tells us which port our containers' ports `8080` are exposed as. Under the
 ports column, you should see something like
 
-```bash
-8080:${EXPOSED_PORT}/TCP
+```
+8080:<RANDOM_SERVICE_PORT>/TCP
 ```
 
 If you do `kubectl cluster-info`, you should also see the IP address at which
 your minikube cluster is runnning as
 
 ```
-https://<IP_ADDRESS>:<IGNORE_THIS_PORT>
+https://<CLUSTER_IP>:<IGNORE_THIS_PORT>
 ```
 
 To make a GET request against our `random-service`, all you have to do now is
 
 ```bash
-curl ${IP_ADDRESS}:${EXPOSED_PORT}
+curl ${CLUSTER_IP}:${RANDOM_SERVICE_PORT}
 ```
+
+You can also scale the deployment of the `random-server`, which was called
+`random` (to confirm, try `kubectl get deployment`), using
+
+```bash
+kubectl scale deployment/random --replicas=${NUM_REPLICAS}
+```
+
+where `${NUM_REPLICAS}` is the number of pods running the `random-server` you
+would like to have running on the cluster.
 
 
 #### Aside
@@ -171,3 +181,42 @@ POD_NAME=$(kubectl get pods -o jsonpath="{.items[*].metadata.name}" | grep "rand
 There is more information on `jsonpath` formatting [here](https://kubernetes.io/docs/reference/kubectl/jsonpath/).
 
 
+## Downstream services
+
+With at least one `random-server` instance running on the minikube cluster, let
+us define a downstream service that makes use of it.
+
+[`randint-server`](./randint-server/index.js) is an application that accepts
+GET requests along the route `/${N}` for a positive integer `N` and, in the
+response body, returns a random integer from 0 to N-1 (inclusive). It relies on
+a `random-server` instance to generate this integer. I have put an [image for
+this server on DockerHub](https://hub.docker.com/r/fuzzyfrog/randint-server/).
+You can also see use the [Dockerfile](./randint-server/Dockerfile) directly if
+you prefer.
+
+Let us deploy `randint-server` pods to the minikube cluster. Note that
+`randint-server` requires the injection of a `random-server` URL using the
+`RANDOM_SERVER_URL` environment variable. `kubectl run` allows us to do this
+using the `--env` parameter (try `kubectl run --help` for more information).
+
+```bash
+kubectl run randint --image=fuzzyfrog/randint-server --env "RANDOM_SERVER_URL=http://${CLUSTER_IP}:${RANDOM_SERVICE_PORT}"
+```
+
+where `${CLUSTER_IP}` and `${RANDOM_SERVICE_PORT}` have the same values as above.
+
+Now
+
+```bash
+kubectl get service randint-service
+```
+
+will tell you the port on your minikube cluster that connects to ports `8081` on
+your `randint` pods, let us call it `${RANDINT_SERVICE_PORT}`. You can now make
+calls against the `randint-service` as follows
+
+```bash
+curl ${CLUSTER_IP}:${RANDINT_SERVICE_PORT}/42
+```
+
+This will return a random integer between 0 and 41 (including possibly 0 or 41).

@@ -140,20 +140,20 @@ That tells us which port our containers' ports `8080` are exposed as. Under the
 ports column, you should see something like
 
 ```bash
-8080:<EXPOSED_PORT>/TCP
+8080:${EXPOSED_PORT}/TCP
 ```
 
 If you do `kubectl cluster-info`, you should also see the IP address at which
 your minikube cluster is runnning as
 
-```bash
+```
 https://<IP_ADDRESS>:<IGNORE_THIS_PORT>
 ```
 
 To make a GET request against our `random-service`, all you have to do now is
 
 ```bash
-curl <IP_ADDRESS>:<EXPOSED_PORT>
+curl ${IP_ADDRESS}:${EXPOSED_PORT}
 ```
 
 

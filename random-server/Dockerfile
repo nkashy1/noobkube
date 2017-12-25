@@ -6,4 +6,6 @@ RUN mkdir -p /opt/random-server
 
 COPY . /opt/random-server
 
+EXPOSE ${RANDOM_SERVER_PORT}
+
 ENTRYPOINT ["node", "/opt/random-server/index.js"]

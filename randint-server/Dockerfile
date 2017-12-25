@@ -11,4 +11,6 @@ WORKDIR /opt/randint-server
 
 RUN npm install
 
+EXPOSE ${RANDINT_SERVER_PORT}
+
 ENTRYPOINT ["node", "index.js"]

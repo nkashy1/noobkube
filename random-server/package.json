@@ -1,0 +1,11 @@
+{
+  "name": "random-server",
+  "version": "1.0.0",
+  "description": "Samples from uniform distribution upon GET request and returns the value in the response body",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nkashy1",
+  "license": "Apache-2.0"
+}

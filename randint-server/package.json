@@ -1,0 +1,16 @@
+{
+  "name": "randint-server",
+  "version": "1.0.0",
+  "description": "GET requests against the route /<N> for a positive integer N will get responses with a random integer from 0 to N-1 (inclusive) in the body",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.16.2",
+    "request": "^2.83.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nkashy1",
+  "license": "Apache-2.0"
+}

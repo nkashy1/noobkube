@@ -205,6 +205,12 @@ kubectl run randint --image=fuzzyfrog/randint-server:v1 --env "RANDOM_SERVER_URL
 
 where `${CLUSTER_IP}` and `${RANDOM_SERVICE_PORT}` have the same values as above.
 
+Next, expose the `randint` deployment as a service using
+
+```bash
+kubectl expose deployment randint --type=NodePort --name=randint-service --port=8081
+```
+
 Now
 
 ```bash
@@ -267,3 +273,23 @@ kubectl logs -l run=randint
 
 The different calls should now be logged in the resulting output. This will
 also show you how `randint-service` distributes calls over your pods.
+
+
+## Cleaning up
+
+You can erase all traces of what we've done so far from your kubernetes cluster using:
+
+```bash
+kubectl delete service random-service randint-service
+```
+
+and
+
+```bash
+kubectl delete deployment random randint
+```
+
+
+## Doing it all in one go
+
+
